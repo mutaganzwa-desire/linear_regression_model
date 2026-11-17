@@ -1,0 +1,15 @@
+incident_year,action_type,num_action_types,actor_motive,actor_variety,hacking_vector,data_type,num_data_types,discovery_method,employee_count,industry,region,records_exposed
+2025,Hacking,1,Unknown,Unknown,Unknown,Medical,2,Internal,10001 to 25000,Healthcare,Americas,5600000.0
+2025,Malware,2,Financial,Organized crime,Partner,Credentials,2,External,10001 to 25000,Public Administration,Americas,200000.0
+2025,Hacking,2,Financial,Organized crime,Web application,Unknown,0,External,Over 100000,Information,Americas,2500000.0
+2025,Malware,2,Financial,Organized crime,Unknown,Medical,2,External,101 to 1000,Healthcare,Americas,600000.0
+2024,Malware,1,Financial,Organized crime,Unknown,Personal,1,External,101 to 1000,Finance,Americas,16900000.0
+2024,Malware,1,Financial,Organized crime,Unknown,Unknown,0,External,50001 to 100000,Administrative,Americas,15494592.0
+2026,Hacking,2,Financial,Organized crime,Unknown,Internal,2,External,1001 to 10000,Manufacturing,Americas,2200000.0
+2024,Hacking,1,Financial,Organized crime,Unknown,Personal,1,External,10001 to 25000,Retail,Americas,57000000.0
+2024,Hacking,1,Financial,Organized crime,Web application,Personal,1,External,1001 to 10000,Administrative,Americas,500000000.0
+2024,Malware,1,Financial,Organized crime,Unknown,Medical,1,External,10001 to 25000,Public Administration,Asia,42000000.0
+2025,Hacking,1,Financial,Organized crime,Unknown,Medical,1,External,101 to 1000,Manufacturing,Americas,318150.0
+2024,Hacking,1,Unknown,Unaffiliated,Web application,Personal,1,Unknown,11 to 100,Professional Services,Americas,341650.0
+2025,Hacking,1,Unknown,Unknown,Unknown,Medical,2,Internal,10001 to 25000,Banking,Americas,5600000.0
+1990,Malware,2,Financial,Organized crime,Partner,Credentials,2,External,10001 to 25000,Public Administration,Americas,200000.0
