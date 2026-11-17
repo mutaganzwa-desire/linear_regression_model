@@ -1,0 +1,24 @@
+[project]
+name = "vcdb-breach-impact"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.163.1",
+    "joblib>=1.6.0",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.5",
+    "pandas>=3.1.1",
+    "pydantic>=2.14.3",
+    "python-multipart>=0.0.34",
+    "scikit-learn>=1.9.1",
+    "seaborn>=0.13.2",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "jupyter>=1.1.1",
+    "nbconvert>=7.17.2",
+    "nbformat>=5.11.1",
+]
