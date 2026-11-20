@@ -91,6 +91,7 @@ class _PredictionPageState extends State<PredictionPage> {
     for (final spec in inputs) spec.key: FocusNode(),
   };
 
+  final GlobalKey _resultKey = GlobalKey();
   bool _loading = false;
   Prediction? _prediction;
   String? _error;
@@ -209,23 +210,44 @@ class _PredictionPageState extends State<PredictionPage> {
     return body;
   }
 
+  /// Scrolls the page so the result/error box is on screen.
+  void _showResultArea() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _resultKey.currentContext;
+      if (ctx != null) {
+        Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 400), alignment: 0.5);
+      }
+    });
+  }
+
   Future<void> _predict() async {
     FocusScope.of(context).unfocus();
     final body = _collectInputs();
-    if (body == null) return;
+    if (body == null) {
+      _showResultArea();
+      return;
+    }
 
     setState(() {
       _loading = true;
       _error = null;
       _prediction = null;
     });
+    _showResultArea();
     try {
       final result = await fetchPrediction(body);
+      if (!mounted) return;
       setState(() => _prediction = result);
     } on ApiException catch (e) {
+      if (!mounted) return;
       setState(() => _error = e.message);
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      if (!mounted) return;
+      setState(() => _error = 'Something went wrong: $e');
     } finally {
       if (mounted) setState(() => _loading = false);
+      _showResultArea();
     }
   }
 
@@ -279,7 +301,7 @@ class _PredictionPageState extends State<PredictionPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              _ResultArea(loading: _loading, prediction: _prediction, error: _error),
+              _ResultArea(key: _resultKey, loading: _loading, prediction: _prediction, error: _error),
             ],
           ),
         ),
@@ -294,7 +316,7 @@ class _ResultArea extends StatelessWidget {
   final Prediction? prediction;
   final String? error;
 
-  const _ResultArea({required this.loading, required this.prediction, required this.error});
+  const _ResultArea({super.key, required this.loading, required this.prediction, required this.error});
 
   @override
   Widget build(BuildContext context) {

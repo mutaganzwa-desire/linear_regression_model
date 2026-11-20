@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 /// Public URL of the FastAPI service on Render (Swagger UI: $baseUrl/docs).
@@ -34,6 +35,7 @@ class ApiException implements Exception {
 /// Sends the 12 incident inputs to POST /predict and returns the prediction.
 Future<Prediction> fetchPrediction(Map<String, dynamic> inputs) async {
   final uri = Uri.parse('$baseUrl/predict');
+  debugPrint('POST $uri  body=${jsonEncode(inputs)}');
   final http.Response response;
   try {
     response = await http
@@ -45,13 +47,17 @@ Future<Prediction> fetchPrediction(Map<String, dynamic> inputs) async {
         // A free Render service can take up to a minute to wake up.
         .timeout(const Duration(seconds: 90));
   } on TimeoutException {
+    debugPrint('Request timed out');
     throw ApiException('The server took too long to respond. It may be waking up, so please try again.');
-  } on SocketException {
+  } on SocketException catch (e) {
+    debugPrint('SocketException: $e');
     throw ApiException('No internet connection, or the server could not be reached.');
-  } on http.ClientException {
+  } on http.ClientException catch (e) {
+    debugPrint('ClientException: $e');
     throw ApiException('Could not connect to the prediction server.');
   }
 
+  debugPrint('Response ${response.statusCode}: ${response.body}');
   if (response.statusCode == 200) {
     return Prediction.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
