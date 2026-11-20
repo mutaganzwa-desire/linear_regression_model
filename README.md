@@ -11,13 +11,38 @@ Incident responders can then size their warnings to affected people, and their e
 I kept online-threat incidents (Hacking, Malware, Social) from 2005 onwards with a known record count: **1,451 incidents, 12 features** (3 numeric, 9 categorical). The target is `records_exposed`, modelled as log10.
 
 ## API (Swagger UI)
-**https://YOUR-SERVICE.onrender.com/docs** ← replace with your Render URL
+**https://linear-regression-model-ftfw.onrender.com/docs**
+
+The service is on Render's free plan, so it sleeps after 15 minutes without traffic. The first request can take up to a minute while it wakes up.
 
 ## Video demo
 **https://youtu.be/YOUR-VIDEO-ID** ← replace with your YouTube link
 
 ## How to run the mobile app
-_Steps added with the Flutter app._
+Requirements: the [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel, 3.24 or newer), plus an Android emulator (Android Studio → Device Manager), an iOS simulator, or a phone with USB debugging on.
+
+1. Clone the repo and open the app folder:
+   ```bash
+   git clone https://github.com/mutaganzwa-desire/linear_regression_model.git
+   cd linear_regression_model/summative/FlutterApp
+   ```
+2. Generate the Android/iOS platform folders. This keeps the existing `lib/` and `pubspec.yaml`:
+   ```bash
+   flutter create --project-name breach_estimator --platforms android,ios .
+   ```
+3. Install the packages:
+   ```bash
+   flutter pub get
+   ```
+4. Start an emulator, or plug in a phone, then check that Flutter sees it:
+   ```bash
+   flutter devices
+   ```
+5. Run the app:
+   ```bash
+   flutter run
+   ```
+6. In the app, tap **Fill example values** (or type your own), then tap **Predict**. The estimated number of records exposed appears in the box below the button. A missing, non-numeric or out-of-range value shows an error in the same box.
 
 ---
 
