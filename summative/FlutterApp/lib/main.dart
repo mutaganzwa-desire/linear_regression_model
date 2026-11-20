@@ -36,7 +36,8 @@ class InputSpec {
 
   bool get isNumber => options == null;
 
-  String get helper => isNumber ? 'Whole number from $min to $max' : 'One of: ${options!.join(', ')}';
+  String get helper =>
+      isNumber ? 'Whole number from $min to $max' : 'Tap to see the ${options!.length} options, or type to search';
 }
 
 /// The 12 variables the model needs, with the same types, ranges and categories as the API.
@@ -86,6 +87,9 @@ class _PredictionPageState extends State<PredictionPage> {
   final Map<String, TextEditingController> _controllers = {
     for (final spec in inputs) spec.key: TextEditingController(),
   };
+  final Map<String, FocusNode> _focusNodes = {
+    for (final spec in inputs) spec.key: FocusNode(),
+  };
 
   bool _loading = false;
   Prediction? _prediction;
@@ -96,7 +100,71 @@ class _PredictionPageState extends State<PredictionPage> {
     for (final c in _controllers.values) {
       c.dispose();
     }
+    for (final f in _focusNodes.values) {
+      f.dispose();
+    }
     super.dispose();
+  }
+
+  InputDecoration _decoration(InputSpec spec) => InputDecoration(
+        labelText: spec.label,
+        hintText: 'e.g. ${spec.example}',
+        helperText: spec.helper,
+        helperMaxLines: 2,
+        border: const OutlineInputBorder(),
+        suffixIcon: spec.isNumber ? null : const Icon(Icons.arrow_drop_down),
+      );
+
+  /// Numeric inputs: a plain number text field.
+  /// Category inputs: still a text field, but it shows the valid options as you type (tap one to fill it in).
+  Widget _buildField(InputSpec spec) {
+    if (spec.isNumber) {
+      return TextField(
+        controller: _controllers[spec.key],
+        focusNode: _focusNodes[spec.key],
+        keyboardType: TextInputType.number,
+        textInputAction: TextInputAction.next,
+        decoration: _decoration(spec),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) => RawAutocomplete<String>(
+        textEditingController: _controllers[spec.key],
+        focusNode: _focusNodes[spec.key],
+        optionsBuilder: (TextEditingValue value) {
+          final query = value.text.trim().toLowerCase();
+          if (query.isEmpty) return spec.options!;
+          return spec.options!.where((o) => o.toLowerCase().contains(query));
+        },
+        fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) => TextField(
+          controller: controller,
+          focusNode: focusNode,
+          textInputAction: TextInputAction.next,
+          decoration: _decoration(spec),
+          onSubmitted: (_) => onFieldSubmitted(),
+        ),
+        optionsViewBuilder: (context, onSelected, options) => Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 6,
+            borderRadius: BorderRadius.circular(8),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 240, maxWidth: constraints.maxWidth),
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: options.length,
+                itemBuilder: (context, i) {
+                  final option = options.elementAt(i);
+                  return ListTile(dense: true, title: Text(option), onTap: () => onSelected(option));
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Checks every field (missing, wrong type, out of range, unknown category) and builds the request body.
@@ -124,7 +192,7 @@ class _PredictionPageState extends State<PredictionPage> {
         // Accept any capitalisation, but send the exact category name the API expects.
         final match = spec.options!.where((o) => o.toLowerCase() == raw.toLowerCase());
         if (match.isEmpty) {
-          problems.add('${spec.label}: "$raw" is not a valid option.');
+          problems.add('${spec.label}: "$raw" is not a valid option. Pick one from the list.');
         } else {
           body[spec.key] = match.first;
         }
@@ -196,18 +264,7 @@ class _PredictionPageState extends State<PredictionPage> {
                 child: TextButton(onPressed: _fillExample, child: const Text('Fill example values')),
               ),
               for (final spec in inputs) ...[
-                TextField(
-                  controller: _controllers[spec.key],
-                  keyboardType: spec.isNumber ? TextInputType.number : TextInputType.text,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: spec.label,
-                    hintText: 'e.g. ${spec.example}',
-                    helperText: spec.helper,
-                    helperMaxLines: 4,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
+                _buildField(spec),
                 const SizedBox(height: 14),
               ],
               const SizedBox(height: 4),
