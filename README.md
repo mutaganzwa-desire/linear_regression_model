@@ -2,7 +2,7 @@
 
 ## Mission and problem
 My mission is to use machine learning and cybersecurity to protect individuals and organisations from online threats, promote digital safety, and give communities the knowledge they need to stay secure online.
-When an organisation detects a cyberattack (hacking, malware or phishing), it knows *how* it was attacked long before forensics confirms *how many* records were stolen.
+When an organisation detects a cyberattack, it knows *how* it was attacked long before forensics confirms *how many* records were stolen.
 This project predicts the number of records an online attack probably exposed, from what is known at detection time.
 Incident responders can then size their warnings to affected people, and their escalation, sooner.
 
